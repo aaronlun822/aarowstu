@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aarow Studio</title>
+  <style>
+    :root{
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --text: #111314;
+      --muted: #6b7378;
+      --accent: #2f4f4f; /* deep slate */
+      --border: #e5e7eb;
+      --focus: #1f3a3a;
+    }
+    *{ box-sizing: border-box; }
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Inter", "SF Pro Text", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", "PingFang HK", "Microsoft JhengHei", sans-serif;
+      margin: 0; padding: 0;
+    }
+    .wrap {
+      max-width: 960px;
+      margin: 48px auto;
+      padding: 0 20px;
+    }
+    header {
+      margin-bottom: 28px;
+    }
+    .brand {
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      color: var(--accent);
+      font-size: 15px;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-size: 28px;
+      margin: 8px 0 0 0;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    .grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 980px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow:
+        0 8px 24px rgba(17,19,20,0.06),
+        0 2px 8px rgba(17,19,20,0.04);
+    }
+    .card h2 {
+      margin: 0 0 14px 0;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    .muted { color: var(--muted); font-size: 13px; }
+    .row { display: flex; gap: 12px; align-items: center; }
+    .field {
+      display: flex; flex-direction: column; gap: 8px; margin: 10px 0;
+    }
+    label { font-size: 13px; color: var(--muted); }
+    input, select, button, textarea {
+      font: inherit;
+      color: var(--text);
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 12px;
+      outline: none;
+      transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(47,79,79,0.12);
+    }
+    button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(47,79,79,0.22);
+    }
+    .tabs {
+      display: inline-flex; gap: 8px; margin: 6px 0 14px 0;
+    }
+    .tab {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 160ms ease;
+      font-size: 13px;
+    }
+    .tab.active {
+      color: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(47,79,79,0.10);
+      font-weight: 600;
+    }
+    .out {
+      background: #fafafa;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .out .cell {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+    }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    footer { margin-top: 26px; color: var(--muted); font-size: 12px; }
+    .note { font-size: 12px; color: var(--muted); margin-top: 6px; }
+	
+	/* start: pdf to jpg vars */
+	--border-color: var(--border);
+	--input-bg: #fafafa;
+	--accent-color: var(--accent);
+	/* end: pdf to jpg vars */
+	
+	/* start: pdf to jpg styles */
+.drop-zone {
+  border: 2px dashed var(--border-color);
+  border-radius: 16px;
+  padding: 22px;
+  background-color: var(--input-bg);
+  transition: all 160ms ease;
+  cursor: pointer;
+}
+.drop-zone.dragover {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(47,79,79,0.08);
+  background-color: rgba(47,79,79,0.04);
+}
+.btn-secondary {
+  all: unset; /* 清除原本設定 */
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  padding: 12px 12px;
+  border-radius: 12px;
+  font: inherit;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+.btn-secondary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(47,79,79,0.22);
+}
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: #fff;
+}
+.preview-item {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(17,19,20,0.10);
+  display: block;
+}
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background-color: var(--border-color);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background-color: var(--accent-color);
+  width: 0%;
+  transition: width 0.3s;
+}
+/* end: pdf to jpg styles */
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">Aarow Studio</div>
+      <h1>單位即時轉換 ＆ WhatsApp 快速對話</h1>
+      <div class="muted">簡潔、精準、即用。為量度與聯繫而設。</div>
+    </header>
+
+    <div class="grid">
+      <!-- Converter card -->
+      <section class="card" aria-label="Unit converter">
+        <h2>單位即時轉換</h2>
+        <div class="muted">支援長度與面積：ft、in、mm、cm、ft²、m²</div>
+
+        <div class="tabs" role="tablist">
+          <button class="tab active" id="tab-length" aria-selected="true">長度</button>
+          <button class="tab" id="tab-area" aria-selected="false">面積</button>
+        </div>
+
+        <!-- Length converter -->
+        <div id="length-panel">
+          <div class="row">
+            <div class="field" style="flex:2;">
+              <label for="len-value">輸入數值</label>
+              <input id="len-value" type="number" inputmode="decimal" placeholder="例如：85" />
+            </div>
+            <div class="field" style="flex:1;">
+              <label for="len-unit">單位</label>
+              <select id="len-unit">
+                <option value="mm">mm（毫米）</option>
+                <option value="cm">cm（厘米）</option>
+                <option value="inch">inch（英寸）</option>
+                <option value="ft">ft（英尺）</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>轉換結果</label>
+            <div class="out" id="len-out">
+              <div class="cell"><strong>mm:</strong> <span class="mono" id="len-mm">—</span></div>
+              <div class="cell"><strong>cm:</strong> <span class="mono" id="len-cm">—</span></div>
+              <div class="cell"><strong>inch:</strong> <span class="mono" id="len-inch">—</span></div>
+              <div class="cell"><strong>ft:</strong> <span class="mono" id="len-ft">—</span></div>
+            </div>
+          </div>
+          <div class="note">即時更新，支援小數。</div>
+        </div>
+
+        <!-- Area converter -->
+        <div id="area-panel" style="display:none;">
+          <div class="row">
+            <div class="field" style="flex:2;">
+              <label for="area-value">輸入數值</label>
+              <input id="area-value" type="number" inputmode="decimal" placeholder="例如：120" />
+            </div>
+            <div class="field" style="flex:1;">
+              <label for="area-unit">單位</label>
+              <select id="area-unit">
+                <option value="m2">m²（平方米）</option>
+                <option value="ft2">ft²（平方英尺）</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>轉換結果</label>
+            <div class="out" id="area-out">
+              <div class="cell"><strong>**m²:**</strong> <span class="mono" id="area-m2">—</span></div>
+              <div class="cell"><strong>**ft²:**</strong> <span class="mono" id="area-ft2">—</span></div>
+            </div>
+          </div>
+          <div class="note">m² ↔ ft² 高精度轉換。</div>
+        </div>
+      </section>
+
+      <!-- WhatsApp card -->
+      <section class="card" aria-label="WhatsApp quick chat">
+        <h2>WhatsApp 快速對話</h2>
+        <div class="muted">輸入電話，即可在瀏覽器開啟 Web WhatsApp 對話。</div>
+
+        <div class="field">
+          <label for="wa-phone">電話號碼（含國碼，不含 + 或空格）</label>
+          <input id="wa-phone" type="tel" inputmode="numeric" placeholder="例如：85291234567" />
+          <div class="note">格式：國碼 + 號碼，例如香港 852 + 手機 91234567 → 85291234567。</div>
+        </div>
+
+        <div class="field">
+          <label for="wa-text">訊息（可選）</label>
+          <textarea id="wa-text" rows="3" placeholder="預填訊息（可留空）"></textarea>
+        </div>
+
+        <div class="row">
+          <button id="wa-open">開啟對話</button>
+          <div class="muted">會在新分頁開啟。</div>
+        </div>
+      </section>
+	  
+	<!-- start: pdf to jpg card -->
+	<section class="card" aria-label="PDF to JPG">
+		<h2>PDF 轉 JPG</h2>
+		<div class="muted">拖曳上傳，支援多頁轉換與打包下載。</div>
+
+  <div id="drop-zone" class="drop-zone" tabindex="0">
+    <div class="drop-content" style="text-align:center;">
+      <div style="font-size: 2rem;">📄</div>
+      <p class="muted" style="margin: 10px 0;">拖曳 PDF 檔案至此，或點擊上傳</p>
+      <input type="file" id="file-input" accept="application/pdf" style="display:none;">
+      <button class="btn-secondary" type="button" onclick="document.getElementById('file-input').click()">選擇檔案</button>
+    </div>
+  </div>
+
+  <div id="status-area" style="display:none; text-align:center; margin: 1rem 0;">
+    <p id="status-text" class="muted" style="margin-bottom: 0.5rem;">正在處理...</p>
+    <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+  </div>
+
+  <div id="result-area" style="display:none;">
+    <div class="row" style="justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <h3 style="font-size: 16px; margin: 0;">預覽結果</h3>
+      <button id="download-btn" class="btn-primary" type="button" style="width:auto; padding: 8px 16px;">⬇️ 全部下載 (.zip)</button>
+    </div>
+    <div id="preview-grid" class="preview-grid"></div>
+  </div>
+</section>
+<!-- end: pdf to jpg card -->
+
+    </div>
+
+    <footer>
+      © 2025 — Aarow Studio.
+    </footer>
+  </div>
+  
+	<!-- start: pdf to jpg libs -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+	<!-- end: pdf to jpg libs -->
+
+  <script>
+  
+    // Helpers
+    const fmt = (n) => {
+      if (n === null || Number.isNaN(n)) return "—";
+      // Format up to 6 significant digits, trim trailing zeros
+      const s = Number(n).toLocaleString(undefined, { maximumFractionDigits: 6 });
+      return s;
+    };
+
+    // Tabs
+    const tabLength = document.getElementById('tab-length');
+    const tabArea = document.getElementById('tab-area');
+    const lengthPanel = document.getElementById('length-panel');
+    const areaPanel = document.getElementById('area-panel');
+
+    const activateTab = (type) => {
+      if (type === 'length') {
+        tabLength.classList.add('active'); tabLength.setAttribute('aria-selected','true');
+        tabArea.classList.remove('active'); tabArea.setAttribute('aria-selected','false');
+        lengthPanel.style.display = ''; areaPanel.style.display = 'none';
+      } else {
+        tabArea.classList.add('active'); tabArea.setAttribute('aria-selected','true');
+        tabLength.classList.remove('active'); tabLength.setAttribute('aria-selected','false');
+        areaPanel.style.display = ''; lengthPanel.style.display = 'none';
+      }
+    };
+    tabLength.addEventListener('click', () => activateTab('length'));
+    tabArea.addEventListener('click', () => activateTab('area'));
+
+    // Length conversion
+    const lenValue = document.getElementById('len-value');
+    const lenUnit = document.getElementById('len-unit');
+    const lenOutMM = document.getElementById('len-mm');
+    const lenOutCM = document.getElementById('len-cm');
+    const lenOutIN = document.getElementById('len-inch');
+    const lenOutFT = document.getElementById('len-ft');
+
+    const toMeters = (val, unit) => {
+      const x = Number(val);
+      if (!isFinite(x)) return NaN;
+      switch (unit) {
+        case 'mm': return x / 1000;
+        case 'cm': return x / 100;
+        case 'inch': return x * 0.0254;
+        case 'ft': return x * 0.3048;
+        default: return NaN;
+      }
+    };
+    const fromMeters = (m) => ({
+      mm: m * 1000,
+      cm: m * 100,
+      inch: m / 0.0254,
+      ft: m / 0.3048
+    });
+
+    const updateLength = () => {
+      const m = toMeters(lenValue.value, lenUnit.value);
+      if (!isFinite(m)) {
+        lenOutMM.textContent = "—";
+        lenOutCM.textContent = "—";
+        lenOutIN.textContent = "—";
+        lenOutFT.textContent = "—";
+        return;
+      }
+      const r = fromMeters(m);
+      lenOutMM.textContent = fmt(r.mm);
+      lenOutCM.textContent = fmt(r.cm);
+      lenOutIN.textContent = fmt(r.inch);
+      lenOutFT.textContent = fmt(r.ft);
+    };
+    lenValue.addEventListener('input', updateLength);
+    lenUnit.addEventListener('change', updateLength);
+    updateLength();
+
+    // Area conversion
+    const areaValue = document.getElementById('area-value');
+    const areaUnit = document.getElementById('area-unit');
+    const areaOutM2 = document.getElementById('area-m2');
+    const areaOutFT2 = document.getElementById('area-ft2');
+
+    const toM2 = (val, unit) => {
+      const x = Number(val);
+      if (!isFinite(x)) return NaN;
+      switch (unit) {
+        case 'm2': return x;
+        case 'ft2': return x * 0.09290304; // 1 ft² = 0.09290304 m²
+        default: return NaN;
+      }
+    };
+    const fromM2 = (m2) => ({
+      m2: m2,
+      ft2: m2 / 0.09290304
+    });
+
+    const updateArea = () => {
+      const m2 = toM2(areaValue.value, areaUnit.value);
+      if (!isFinite(m2)) {
+        areaOutM2.textContent = "—";
+        areaOutFT2.textContent = "—";
+        return;
+      }
+      const r = fromM2(m2);
+      areaOutM2.textContent = fmt(r.m2);
+      areaOutFT2.textContent = fmt(r.ft2);
+    };
+    areaValue.addEventListener('input', updateArea);
+    areaUnit.addEventListener('change', updateArea);
+    updateArea();
+
+    // WhatsApp quick chat
+    const waPhone = document.getElementById('wa-phone');
+    const waText = document.getElementById('wa-text');
+    const waOpen = document.getElementById('wa-open');
+
+    const sanitizePhone = (raw) => {
+      // Remove spaces, +, hyphens, parentheses, dots
+      const digits = String(raw).replace(/[^\d]/g, '');
+      return digits;
+    };
+
+    waOpen.addEventListener('click', () => {
+      const phone = sanitizePhone(waPhone.value);
+      if (!phone) {
+        alert('請輸入電話號碼（含國碼，不含 + 或空格）');
+        waPhone.focus();
+        return;
+      }
+      // Build URL (wa.me is canonical; web.whatsapp.com redirects appropriately)
+      const base = 'https://wa.me/';
+      const text = waText.value ? `?text=${encodeURIComponent(waText.value)}` : '';
+      const url = `${base}${phone}${text}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+    });
+	<!-- start: pdf to jpg logic -->
+	// PDF.js worker 設定（必要）
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// 取得元素
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+const statusArea = document.getElementById('status-area');
+const statusText = document.getElementById('status-text');
+const progressFill = document.getElementById('progress-fill');
+const resultArea = document.getElementById('result-area');
+const previewGrid = document.getElementById('preview-grid');
+const downloadBtn = document.getElementById('download-btn');
+
+let generatedFiles = [];
+let originalFileName = 'document';
+
+// 拖曳事件
+dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+
+// 點擊上傳
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files.length) handleFile(e.target.files[0]);
+});
+
+// 核心：處理檔案
+async function handleFile(file) {
+  if (file.type !== 'application/pdf') {
+    alert('請上傳 PDF 檔案');
+    return;
+  }
+
+  // reset UI
+  originalFileName = file.name.replace(/\.pdf$/i, '');
+  generatedFiles = [];
+  previewGrid.innerHTML = '';
+  resultArea.style.display = 'none';
+  statusArea.style.display = 'block';
+  dropZone.style.display = 'none';
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+    const totalPages = pdf.numPages;
+
+    for (let i = 1; i <= totalPages; i++) {
+      updateProgress(i, totalPages);
+      const page = await pdf.getPage(i);
+
+      const scale = 2.0; // 清晰度（可調）
+      const viewport = page.getViewport({ scale });
+
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+
+      await page.render({ canvasContext: context, viewport }).promise;
+
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.85));
+      const fileName = `${originalFileName}_page_${i}.jpg`;
+      generatedFiles.push({ name: fileName, blob });
+
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(blob);
+      img.className = 'preview-item';
+      previewGrid.appendChild(img);
+    }
+	  if (totalPages === 1) {
+	  // 單頁 PDF → 改成 JPG 下載
+	  downloadBtn.textContent = "下載 (.jpg)";
+	  downloadBtn.onclick = () => {
+	  const file = generatedFiles[0];
+      saveAs(file.blob, file.name);
+    };
+	
+    } else {
+	
+     // 多頁 PDF → 保持 ZIP 下載
+     downloadBtn.textContent = "全部下載 (.zip)";
+     downloadBtn.onclick = generateZip;
+    }
+
+    statusArea.style.display = 'none';
+    resultArea.style.display = 'block';
+    dropZone.style.display = 'block';
+
+  } catch (err) {
+    console.error(err);
+    alert('轉換失敗，請確保檔案未損壞。');
+    statusArea.style.display = 'none';
+    dropZone.style.display = 'block';
+  }
+}
+
+function updateProgress(current, total) {
+  const percent = Math.round((current / total) * 100);
+  progressFill.style.width = `${percent}%`;
+  statusText.innerText = `正在轉換第 ${current} / ${total} 頁...`;
+}
+
+async function generateZip() {
+  const zip = new JSZip();
+  generatedFiles.forEach(file => zip.file(file.name, file.blob));
+
+  const originalText = downloadBtn.innerText;
+  downloadBtn.innerText = '壓縮中...';
+
+  const content = await zip.generateAsync({ type: 'blob' });
+  saveAs(content, `${originalFileName}.zip`);
+
+  downloadBtn.innerText = originalText;
+}
+<!-- end: pdf to jpg logic -->
+  </script>
+</body>
+</html>
