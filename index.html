@@ -170,7 +170,9 @@
   transform: translateY(-1px);
   box-shadow: 0 8px 20px rgba(47,79,79,0.22);
 }
-.preview-grid {
+.preview-grid, .out {
+  width: 100%;       /* ✅ 不要固定寬度 */
+  overflow-x: auto;  /* ✅ 如果內容太寬，允許橫向捲動 */
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 10px;
